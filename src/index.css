@@ -7,22 +7,22 @@
 @layer base {
   :root {
     --background: 35 100% 98%;
-    --foreground: 24 10% 10%;
+    --foreground: 24 20% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 24 10% 10%;
+    --card-foreground: 24 20% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 24 10% 10%;
+    --popover-foreground: 24 20% 8%;
 
-    --primary: 24 90% 40%;
+    --primary: 24 90% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 80% 40%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 24 10% 96%;
-    --muted-foreground: 24 5% 45%;
+    --muted-foreground: 24 10% 35%;
 
     --accent: 24 60% 50%;
     --accent-foreground: 0 0% 100%;
@@ -36,6 +36,9 @@
 
     --radius: 0.5rem;
 
+    --hindu-orange: 24 100% 50%;
+    --hindu-red: 0 68% 42%;
+
     --sidebar-background: 24 60% 15%;
     --sidebar-foreground: 24 15% 90%;
     --sidebar-primary: 24 90% 50%;
@@ -47,33 +50,36 @@
   }
 
   .dark {
-    --background: 24 30% 10%;
-    --foreground: 24 10% 90%;
+    --background: 24 25% 8%;
+    --foreground: 24 15% 94%;
 
-    --card: 24 20% 15%;
-    --card-foreground: 24 10% 90%;
+    --card: 24 20% 12%;
+    --card-foreground: 24 15% 94%;
 
-    --popover: 24 20% 15%;
-    --popover-foreground: 24 10% 90%;
+    --popover: 24 20% 12%;
+    --popover-foreground: 24 15% 94%;
 
-    --primary: 24 70% 45%;
+    --primary: 24 85% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 60% 35%;
+    --secondary: 0 70% 45%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 24 20% 20%;
-    --muted-foreground: 24 10% 60%;
+    --muted: 24 15% 16%;
+    --muted-foreground: 24 10% 75%;
 
-    --accent: 24 50% 35%;
+    --accent: 24 70% 45%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 24 15% 25%;
-    --input: 24 15% 25%;
-    --ring: 24 70% 50%;
+    --border: 24 15% 20%;
+    --input: 24 15% 20%;
+    --ring: 24 85% 55%;
+
+    --hindu-orange: 24 100% 60%;
+    --hindu-red: 0 75% 50%;
   }
 }
 
@@ -86,7 +92,10 @@
     @apply bg-background text-foreground font-sanskrit;
   }
 
-  /* Mantra text class - using sans font instead of non-existent mantra font */
+  a {
+    @apply text-hindu-orange hover:text-hindu-orange/80 dark:text-hindu-orange/90 dark:hover:text-hindu-orange;
+  }
+
   .mantra-text {
     @apply font-sanskrit leading-relaxed;
   }
@@ -101,7 +110,7 @@
 
   .feature-tile::after {
     content: '';
-    @apply absolute bottom-0 left-0 w-full h-1 bg-primary opacity-80;
+    @apply absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-hindu-orange to-hindu-red opacity-80;
   }
 
   .shrine-bg {
@@ -121,6 +130,6 @@
   }
   
   .progress {
-    @apply h-full bg-primary transition-all;
+    @apply h-full bg-gradient-to-r from-hindu-orange to-hindu-red transition-all;
   }
 }

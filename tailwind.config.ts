@@ -1,5 +1,5 @@
-
 import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
 	darkMode: ["class"],
@@ -63,14 +63,77 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Hindu app theme colors
-				hindu: {
-					red: '#B91C1C',
-					gold: '#D97706',
-					saffron: '#F97316',
-					maroon: '#7F1D1D',
-					orange: '#EA580C',
-				}
+				// Hindu-themed colors
+				"hindu-orange": {
+					DEFAULT: "#FF7F00", // Vibrant saffron orange
+					'50': '#FFF9ED',
+					'100': '#FFF1D6',
+					'200': '#FFE2AC',
+					'300': '#FFD382',
+					'400': '#FFC359',
+					'500': '#FFAF2F',
+					'600': '#FF9E05',
+					'700': '#DB8500',
+					'800': '#B26D00',
+					'900': '#895400',
+					'950': '#613C00',
+				},
+				"hindu-red": {
+					DEFAULT: "#B22222", // Deep kumkum red
+					'50': '#FCE7E7',
+					'100': '#F9CFCF',
+					'200': '#F39E9E',
+					'300': '#EB6E6E',
+					'400': '#E33D3D',
+					'500': '#D01C1C',
+					'600': '#B22222',
+					'700': '#8D1B1B',
+					'800': '#691414',
+					'900': '#450D0D',
+					'950': '#300909',
+				},
+				"hindu-yellow": {
+					DEFAULT: "#FFD700", // Auspicious gold
+					'50': '#FFFAE5',
+					'100': '#FFF6CC',
+					'200': '#FFED99',
+					'300': '#FFE466',
+					'400': '#FFDA33',
+					'500': '#FFD700',
+					'600': '#CCB100',
+					'700': '#998500',
+					'800': '#665800',
+					'900': '#332C00',
+					'950': '#1A1600',
+				},
+				"hindu-green": {
+					DEFAULT: "#006400", // Sacred tulsi green
+					'50': '#E0FFED',
+					'100': '#C2FFDA',
+					'200': '#85FFB5',
+					'300': '#47FF8F',
+					'400': '#0AFF6A',
+					'500': '#00CC4D',
+					'600': '#009F3D',
+					'700': '#00732C',
+					'800': '#00461C',
+					'900': '#003014',
+					'950': '#001D0C',
+				},
+				"hindu-purple": {
+					DEFAULT: "#800080", // Divine purple
+					'50': '#FCE5FC',
+					'100': '#F9CCF9',
+					'200': '#F399F3',
+					'300': '#EC66EC',
+					'400': '#E433E4',
+					'500': '#D10CD1',
+					'600': '#A209A2',
+					'700': '#800080',
+					'800': '#590059',
+					'900': '#330033',
+					'950': '#1F001F',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -122,6 +185,7 @@ export default {
 			fontFamily: {
 				'sanskrit': ['Poppins', 'sans-serif'],
 				'mantra': ['Noto Sans Devanagari', 'sans-serif'],
+				sans: ["var(--font-sans)", ...fontFamily.sans],
 			},
 		}
 	},

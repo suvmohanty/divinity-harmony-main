@@ -9,123 +9,84 @@ const Footer = () => {
   return (
     <footer className="bg-muted/30 border-t border-muted pt-16 pb-8">
       <div className="container px-4 mx-auto">
-        {/* Newsletter signup */}
-        <div className="max-w-3xl mx-auto mb-16 bg-gradient-to-r from-hindu-red/10 to-hindu-gold/10 rounded-lg p-8 text-center">
-          <h3 className="text-2xl font-bold mb-3">Subscribe to Our Newsletter</h3>
-          <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-            Receive updates on new mantras, upcoming live darshans, and spiritual wisdom directly to your inbox.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <Input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="bg-background border-border/50 focus-visible:ring-hindu-red/50"
-            />
-            <Button className="bg-gradient-to-r from-hindu-red to-hindu-orange hover:brightness-110 transition-all">
-              Subscribe
-            </Button>
-          </div>
-        </div>
-        
         {/* Main footer content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-hindu-red to-hindu-orange rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">ॐ</span>
-              </div>
-              <span className="text-lg font-bold">Divinity Harmony</span>
-            </Link>
-            <p className="text-muted-foreground text-sm max-w-xs">
-              Connecting souls through ancient mantras, live darshans, and spiritual knowledge for a harmonious life.
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-base font-semibold mb-4 tracking-wide">About Us</h3>
+            <p className="text-muted-foreground text-sm mb-6">
+              Divinity Harmony is your spiritual sanctuary, providing access to sacred mantras, live temple darshans, and ancient wisdom to help you embrace divine harmony in daily life.
             </p>
-            <div className="flex space-x-3 pt-2">
-              <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-muted-foreground/20 hover:bg-hindu-red/10 hover:text-hindu-red hover:border-hindu-red/50">
-                <Facebook size={18} />
-                <span className="sr-only">Facebook</span>
-              </Button>
-              <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-muted-foreground/20 hover:bg-hindu-red/10 hover:text-hindu-red hover:border-hindu-red/50">
-                <Twitter size={18} />
-                <span className="sr-only">Twitter</span>
-              </Button>
-              <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-muted-foreground/20 hover:bg-hindu-red/10 hover:text-hindu-red hover:border-hindu-red/50">
-                <Instagram size={18} />
-                <span className="sr-only">Instagram</span>
-              </Button>
-              <Button variant="outline" size="icon" className="rounded-full h-9 w-9 border-muted-foreground/20 hover:bg-hindu-red/10 hover:text-hindu-red hover:border-hindu-red/50">
-                <Youtube size={18} />
-                <span className="sr-only">Youtube</span>
-              </Button>
+            <div className="flex items-center gap-3">
+              <a href="#" className="h-9 w-9 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors">
+                <Facebook size={18} className="text-foreground/70" />
+              </a>
+              <a href="#" className="h-9 w-9 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors">
+                <Twitter size={18} className="text-foreground/70" />
+              </a>
+              <a href="#" className="h-9 w-9 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors">
+                <Instagram size={18} className="text-foreground/70" />
+              </a>
+              <a href="#" className="h-9 w-9 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors">
+                <Youtube size={18} className="text-foreground/70" />
+              </a>
             </div>
           </div>
           
           <div>
             <h3 className="text-base font-semibold mb-4 tracking-wide">Quick Links</h3>
-            <ul className="space-y-2.5 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
                   Home
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/mantras" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
                   Mantras
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/darshan" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
                   Live Darshan
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/mp3-player" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
-                  Spiritual Music
-                </Link>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
+                  Hindu Pujas & Rituals
+                </a>
               </li>
               <li>
-                <Link to="/pdf-reader" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
                   Sacred Texts
-                </Link>
-              </li>
-              <li>
-                <Link to="/settings" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <span className="h-0.5 w-0 bg-hindu-red group-hover:w-2 transition-all duration-300"></span>
-                  Settings
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-base font-semibold mb-4 tracking-wide">Resources</h3>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
-                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
-                  Community Forum
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
-                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
-                  Meditation Resources
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
-                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
-                  Spiritual Guides
-                </a>
-              </li>
+            <h3 className="text-base font-semibold mb-4 tracking-wide">Support</h3>
+            <ul className="space-y-3 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
                   <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
                   Help Center
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                  <span className="h-0.5 w-0 bg-hindu-orange group-hover:w-2 transition-all duration-300"></span>
+                  Terms of Service
                 </a>
               </li>
               <li>
@@ -164,17 +125,17 @@ const Footer = () => {
         
         <Separator className="mb-8 opacity-40" />
         
-        <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4 text-xs text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Divinity Harmony. All rights reserved.</p>
-          <div className="flex space-x-6">
-            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-primary transition-colors">Accessibility</a>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span>Made with</span>
-            <Heart className="h-3 w-3 text-hindu-red fill-hindu-red" />
-            <span>for a spiritual world</span>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">© 2023 Divinity Harmony. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+              <Settings className="h-3 w-3 mr-1" />
+              Settings
+            </Button>
+            <div className="h-4 w-px bg-border"></div>
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+              Made with <Heart className="h-3 w-3 mx-1 text-red-500 fill-red-500" /> by Devotees
+            </Button>
           </div>
         </div>
       </div>

@@ -7,28 +7,34 @@ import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import LoginSignup from "./LoginSignup";
+import { Phone } from 'lucide-react';
 
 interface SplashScreenProps {
   onComplete?: () => void;
+  mode?: 'splash' | 'login';
 }
 
-const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
-  const [isLoading, setIsLoading] = useState(true);
+const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, mode = 'splash' }) => {
+  const [isLoading, setIsLoading] = useState(mode === 'splash');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showFirebaseAuth, setShowFirebaseAuth] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   // Simulate splash screen loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    if (mode === 'splash') {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [mode]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,10 +83,26 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   };
   
   const handleGuestAccess = () => {
+    // Set login status in localStorage for guest access
+    localStorage.setItem('isLoggedIn', 'true');
+    
     toast({
       title: "Guest Access",
       description: "You're browsing as a guest. Some features may be limited.",
     });
+    if (onComplete) onComplete();
+    navigate('/');
+  };
+
+  // Handle Firebase authentication success
+  const handleFirebaseAuthSuccess = (user: any) => {
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    toast({
+      title: "Login Successful",
+      description: "Welcome to Divinity Harmony!",
+    });
+    
     if (onComplete) onComplete();
     navigate('/');
   };
@@ -143,7 +165,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       </div>
       
       {/* Right side - Login form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-background">
+      <div className="md:w-1/2 w-full flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="md:hidden text-center mb-10">
             <div className="w-16 h-16 bg-gradient-to-br from-hindu-red to-hindu-orange rounded-full mx-auto flex items-center justify-center mb-4">
@@ -153,139 +175,195 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             <p className="text-muted-foreground">Connect with your spiritual self</p>
           </div>
           
-          <Card className="shadow-xl border-muted/30">
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl font-semibold">Welcome Back</CardTitle>
-                  <CardDescription>
-                    Enter your credentials to access your spiritual journey
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input 
-                        id="username" 
-                        type="text" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Enter your username" 
-                        className="border-muted/60 focus-visible:ring-hindu-red/50"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <a href="#" className="text-xs text-hindu-red hover:underline">Forgot password?</a>
+          {showFirebaseAuth ? (
+            <LoginSignup 
+              open={showFirebaseAuth} 
+              onOpenChange={setShowFirebaseAuth} 
+              onLoginSuccess={handleFirebaseAuthSuccess}
+            />
+          ) : (
+            <Card className="shadow-xl border-muted/30">
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                  <TabsTrigger value="register">Register</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="login">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl font-semibold">Welcome Back</CardTitle>
+                    <CardDescription>
+                      Enter your credentials to access your spiritual journey
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleLogin} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="username">Username</Label>
+                        <Input 
+                          id="username" 
+                          type="text" 
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Enter your username" 
+                          className="border-muted/60 focus-visible:ring-hindu-red/50"
+                        />
                       </div>
-                      <Input 
-                        id="password" 
-                        type="password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password" 
-                        className="border-muted/60 focus-visible:ring-hindu-red/50"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="remember-me" 
-                        checked={rememberMe}
-                        onCheckedChange={(checked) => setRememberMe(checked === true)}
-                      />
-                      <Label htmlFor="remember-me" className="text-sm text-muted-foreground">
-                        Remember me for 30 days
-                      </Label>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-hindu-red to-hindu-orange hover:from-hindu-red/90 hover:to-hindu-orange/90 transition-all"
-                    >
-                      Sign in
-                    </Button>
-                  </form>
-                </CardContent>
-              </TabsContent>
-              
-              <TabsContent value="register">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl font-semibold">Create Account</CardTitle>
-                  <CardDescription>
-                    Begin your spiritual journey with us
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your.email@example.com" 
-                        className="border-muted/60 focus-visible:ring-hindu-orange/50"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="username-register">Username</Label>
-                      <Input 
-                        id="username-register" 
-                        type="text" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Choose a username" 
-                        className="border-muted/60 focus-visible:ring-hindu-orange/50"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password-register">Password</Label>
-                      <Input 
-                        id="password-register" 
-                        type="password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Create a password" 
-                        className="border-muted/60 focus-visible:ring-hindu-orange/50"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Password must be at least 8 characters long
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <Label htmlFor="terms" className="text-sm text-muted-foreground">
-                        I agree to the <a href="#" className="text-hindu-red hover:underline">Terms of Service</a> and <a href="#" className="text-hindu-red hover:underline">Privacy Policy</a>
-                      </Label>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-hindu-orange to-hindu-gold hover:from-hindu-orange/90 hover:to-hindu-gold/90 transition-all"
-                    >
-                      Create account
-                    </Button>
-                  </form>
-                </CardContent>
-              </TabsContent>
-              
-              <CardFooter className="flex justify-center pt-2 pb-4">
-                <Button variant="link" onClick={handleGuestAccess} className="text-muted-foreground hover:text-foreground">
-                  Continue as Guest
-                </Button>
-              </CardFooter>
-            </Tabs>
-          </Card>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="password">Password</Label>
+                          <a href="#" className="text-xs text-hindu-red hover:underline">Forgot password?</a>
+                        </div>
+                        <Input 
+                          id="password" 
+                          type="password" 
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Enter your password" 
+                          className="border-muted/60 focus-visible:ring-hindu-red/50"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="remember-me" 
+                          checked={rememberMe}
+                          onCheckedChange={(checked) => setRememberMe(checked === true)}
+                        />
+                        <Label htmlFor="remember-me" className="text-sm text-muted-foreground">
+                          Remember me for 30 days
+                        </Label>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-hindu-red to-hindu-orange hover:from-hindu-red/90 hover:to-hindu-orange/90 transition-all"
+                      >
+                        Sign in
+                      </Button>
+                      
+                      {/* Add Firebase Auth login option */}
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t"></span>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-background px-2 text-muted-foreground">
+                            Or use secure login
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setShowFirebaseAuth(true)}
+                      >
+                        <Phone className="mr-2 h-4 w-4" />
+                        Login with Phone / Social
+                      </Button>
+                    </form>
+                  </CardContent>
+                </TabsContent>
+                
+                <TabsContent value="register">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl font-semibold">Create Account</CardTitle>
+                    <CardDescription>
+                      Begin your spiritual journey with us
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleRegister} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="your.email@example.com" 
+                          className="border-muted/60 focus-visible:ring-hindu-orange/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="username-register">Username</Label>
+                        <Input 
+                          id="username-register" 
+                          type="text" 
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          placeholder="Choose a username" 
+                          className="border-muted/60 focus-visible:ring-hindu-orange/50"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password-register">Password</Label>
+                        <Input 
+                          id="password-register" 
+                          type="password" 
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Create a password" 
+                          className="border-muted/60 focus-visible:ring-hindu-orange/50"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Password must be at least 8 characters long
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                          I agree to the <a href="#" className="text-hindu-red hover:underline">Terms of Service</a> and <a href="#" className="text-hindu-red hover:underline">Privacy Policy</a>
+                        </Label>
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-hindu-orange to-hindu-gold hover:from-hindu-orange/90 hover:to-hindu-gold/90 transition-all"
+                      >
+                        Create account
+                      </Button>
+                      
+                      {/* Add Firebase Auth register option */}
+                      <CardFooter className="pt-0">
+                        <div className="w-full space-y-4">
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <span className="w-full border-t"></span>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-background px-2 text-muted-foreground">
+                                Or use secure signup
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <Button 
+                            type="button"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => setShowFirebaseAuth(true)}
+                          >
+                            <Phone className="mr-2 h-4 w-4" />
+                            Register with Phone / Social
+                          </Button>
+                        </div>
+                      </CardFooter>
+                    </form>
+                  </CardContent>
+                </TabsContent>
+                
+                <CardFooter className="flex justify-center pt-2 pb-4">
+                  <Button variant="link" onClick={handleGuestAccess} className="text-muted-foreground hover:text-foreground">
+                    Continue as Guest
+                  </Button>
+                </CardFooter>
+              </Tabs>
+            </Card>
+          )}
         </div>
       </div>
     </div>

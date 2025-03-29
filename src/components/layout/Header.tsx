@@ -10,13 +10,14 @@ import {
   Home,
   BookOpen,
   Video,
-  Music,
   FileText,
   Settings,
   LogIn,
   LogOut,
   User,
-  Bell
+  Bell,
+  BookMarked,
+  ChevronDown
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -29,22 +30,39 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 
+// Define navigation with the correct type
 const Navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Mantras', href: '/mantras', icon: BookOpen },
   { name: 'Live Darshan', href: '/darshan', icon: Video },
-  { name: 'MP3 Player', href: '/mp3-player', icon: Music },
+  { name: 'Hindu Puja & Rituals', href: '/puja-rituals', icon: BookMarked },
   { name: 'Sacred Texts', href: '/pdf-reader', icon: FileText },
 ];
 
-const Header = () => {
+// Create a proper NavIcon component to handle Lucide icons
+const NavIcon = ({ icon: Icon }) => {
+  return Icon ? <Icon className="h-4 w-4" /> : null;
+};
+
+// Define Header props interface
+interface HeaderProps {
+  user?: any;
+  onLoginClick?: () => void;
+  loading?: boolean;
+}
+
+const Header = ({ user, onLoginClick, loading = false }: HeaderProps) => {
   const { theme, setTheme } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
   
   // Check if user is logged in
   useEffect(() => {
@@ -54,98 +72,156 @@ const Header = () => {
     }
   }, []);
   
+  // Handle scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   const handleLogin = () => {
-    navigate('/login');
+    if (onLoginClick) {
+      onLoginClick();
+    } else {
+      navigate('/login');
+    }
   };
   
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      localStorage.removeItem('isLoggedIn');
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
+  const isDark = theme === 'dark';
+
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/70 border-b border-border/40 shadow-sm">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? isDark 
+            ? 'bg-card/95 backdrop-blur-md border-b border-border/30' 
+            : 'bg-background/95 backdrop-blur-sm border-b border-border/20' 
+          : isDark
+            ? 'bg-gradient-to-r from-slate-800 to-slate-900'
+            : 'bg-gradient-to-r from-hindu-orange/90 to-hindu-red/90'
+      }`}
+    >
       <div className="container mx-auto">
-        <nav className="flex items-center justify-between py-3">
+        <nav className="flex items-center justify-between h-16">
+          {/* Logo - Left */}
           <div className="flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-hindu-red to-hindu-orange rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white text-xl font-bold">ॐ</span>
+            <Link 
+              to="/" 
+              className="flex items-center gap-3 rounded-full px-2 py-1.5 transition-all duration-300 hover:bg-white/10"
+            >
+              <div className={`h-9 w-9 rounded-full flex items-center justify-center ${
+                isDark 
+                  ? 'bg-hindu-orange text-white' 
+                  : 'bg-white text-hindu-orange'
+              }`}>
+                <span className="text-xl font-bold">ॐ</span>
               </div>
-              <span className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-hindu-red to-hindu-gold">
+              <div className={`font-bold text-lg tracking-wide ${
+                isDark 
+                  ? 'text-white/90' 
+                  : 'text-slate-800 bg-white/80 px-2 py-0.5 rounded-md'
+              }`}>
                 Divinity Harmony
-              </span>
+              </div>
             </Link>
           </div>
 
-          {/* Desktop navigation */}
-          <div className="hidden md:flex md:items-center md:gap-1">
-            <div className="bg-muted/50 rounded-full px-1 py-1 flex items-center mr-2">
-              {Navigation.map((item) => {
-                const isActive = location.pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                      isActive 
-                        ? 'bg-background text-primary shadow-sm'
-                        : 'text-foreground/70 hover:text-primary hover:bg-background/50'
-                    }`}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {item.name}
-                  </Link>
-                );
-              })}
+          {/* Desktop Navigation - Center */}
+          <div className="hidden md:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
+            <div className={`flex gap-1 px-3 py-1.5 rounded-full ${
+              isDark 
+                ? 'bg-slate-700/70' 
+                : isScrolled 
+                  ? 'bg-muted/30' 
+                  : 'bg-white/80'
+            }`}>
+              {Navigation.map((item, index) => (
+                <Link 
+                  key={index} 
+                  to={item.href}
+                  className={`px-4 py-2 text-sm font-medium rounded-full flex items-center gap-2 transition-all ${
+                    location.pathname === item.href 
+                      ? isDark 
+                        ? 'bg-slate-900 text-white font-semibold shadow-sm' 
+                        : 'bg-hindu-orange/90 text-white font-semibold' 
+                      : isDark 
+                        ? 'text-white hover:text-white hover:bg-slate-800' 
+                        : 'text-slate-800 hover:text-hindu-orange hover:bg-white/60'
+                  }`}
+                >
+                  <NavIcon icon={item.icon} />
+                  {item.name}
+                </Link>
+              ))}
             </div>
-            
-            {/* Notification icon */}
-            <Button variant="ghost" size="icon" className="mr-1 text-foreground/70 hover:text-primary">
-              <Bell className="h-5 w-5" />
-            </Button>
-
-            {/* Theme toggle */}
+          </div>
+          
+          {/* Right Side Menu */}
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"
+              className={`rounded-full ${
+                isDark 
+                  ? 'bg-slate-700 text-white hover:bg-slate-600' 
+                  : 'bg-white/80 text-slate-800 hover:bg-white'
+              }`}
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="mr-2 text-foreground/70 hover:text-primary"
             >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              <span className="sr-only">Toggle theme</span>
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-          
+            
             {/* User account menu */}
-            {isLoggedIn ? (
+            {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2 px-2 hover:bg-background/80">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="https://i.pravatar.cc/150?img=30" />
-                      <AvatarFallback>DH</AvatarFallback>
+                  <Button 
+                    variant="ghost" 
+                    className={`relative h-9 w-9 rounded-full p-0 overflow-hidden ${
+                      isDark ? 'ring-1 ring-white/30 bg-slate-700' : 'ring-2 ring-white bg-white'
+                    }`}
+                  >
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user.photoURL} alt={user.displayName} />
+                      <AvatarFallback className={
+                        isDark ? 'bg-slate-800 text-white font-semibold' : 'bg-white text-hindu-orange font-semibold'
+                      }>
+                        {user.displayName?.substring(0, 2) || 'U'}
+                      </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col items-start text-xs">
-                      <span className="font-medium">Devotee</span>
-                      <span className="text-muted-foreground">User</span>
-                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel className="font-bold">My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/settings" className="flex items-center cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
+                  <DropdownMenuItem className="font-medium">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="font-medium">
+                    <BookMarked className="mr-2 h-4 w-4" />
+                    <span>My Pujas</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem onClick={handleLogout} className="font-medium">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -153,103 +229,117 @@ const Header = () => {
               </DropdownMenu>
             ) : (
               <Button 
-                variant="default" 
+                variant="outline" 
                 size="sm" 
+                className={`hidden sm:flex ${
+                  isDark 
+                    ? 'bg-slate-700 text-white border-slate-600 hover:bg-slate-600' 
+                    : 'bg-white text-hindu-orange font-semibold border-0 hover:bg-white/90'
+                }`}
                 onClick={handleLogin}
-                className="flex items-center gap-1 bg-gradient-to-r from-hindu-red to-hindu-orange hover:brightness-110"
               >
-                <LogIn className="h-4 w-4" />
-                <span>Login</span>
-              </Button>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center gap-2 md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="text-foreground/70"
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-            
-            {isLoggedIn ? (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://i.pravatar.cc/150?img=30" />
-                <AvatarFallback>DH</AvatarFallback>
-              </Avatar>
-            ) : (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleLogin}
-                className="bg-gradient-to-r from-hindu-red to-hindu-orange"
-              >
-                <LogIn className="h-4 w-4 mr-1" />
+                <User className="h-4 w-4 mr-2" />
                 Login
               </Button>
             )}
             
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-foreground/70"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            {/* Mobile menu button */}
+            <div className="flex md:hidden">
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={isDark ? 'bg-slate-700 text-white' : 'bg-white/80 text-slate-800'}
+                  >
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72">
+                  <Link to="/" className="flex items-center gap-3 mb-8" onClick={() => setOpen(false)}>
+                    <div className="h-10 w-10 bg-gradient-to-br from-hindu-orange to-hindu-red rounded-full flex items-center justify-center">
+                      <span className="text-white text-xl font-bold">ॐ</span>
+                    </div>
+                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-hindu-orange to-hindu-red">
+                      Divinity Harmony
+                    </span>
+                  </Link>
+                  
+                  <nav className="space-y-2 mb-8">
+                    {Navigation.map((item, index) => (
+                      <Link
+                        key={index}
+                        to={item.href}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          location.pathname === item.href
+                            ? 'bg-muted font-bold text-foreground'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium'
+                        }`}
+                        onClick={() => setOpen(false)}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.name}</span>
+                      </Link>
+                    ))}
+                  </nav>
+                  
+                  <Separator className="my-6" />
+                  
+                  {user ? (
+                    <div className="mb-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Avatar className="h-10 w-10 ring-1 ring-border">
+                          <AvatarImage src={user.photoURL} alt={user.displayName} />
+                          <AvatarFallback className="font-semibold">{user.displayName?.substring(0, 2) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-bold">{user.displayName || 'User'}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[190px]">{user.email}</p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start font-medium" 
+                        onClick={() => {
+                          handleLogout();
+                          setOpen(false);
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant="default" 
+                      className="w-full bg-gradient-to-r from-hindu-orange to-hindu-red mb-4 font-semibold text-white" 
+                      onClick={() => {
+                        handleLogin();
+                        setOpen(false);
+                      }}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login / Register
+                    </Button>
+                  )}
+                  
+                  <div className="mt-auto">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      className="w-full justify-start font-medium"
+                    >
+                      {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                      {isDark ? 'Light Mode' : 'Dark Mode'}
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </nav>
       </div>
-
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-background/90 backdrop-blur border-b border-border/40 animate-in slide-in-from-top-5">
-          <div className="container space-y-1 py-3">
-            {Navigation.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg ${
-                    isActive 
-                      ? 'bg-accent text-accent-foreground'
-                      : 'hover:bg-accent/50 hover:text-accent-foreground'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <item.icon className="h-5 w-5 mr-3" />
-                  {item.name}
-                </Link>
-              );
-            })}
-            <Link
-              to="/settings"
-              className="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg hover:bg-accent/50 hover:text-accent-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Settings className="h-5 w-5 mr-3" />
-              Settings
-            </Link>
-            {isLoggedIn && (
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start px-3 py-2.5 text-sm font-medium rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => {
-                  handleLogout();
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <LogOut className="h-5 w-5 mr-3" />
-                Logout
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 };

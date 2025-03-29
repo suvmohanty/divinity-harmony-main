@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Video, Music, FileText, Settings, ArrowRight } from 'lucide-react';
+import { BookOpen, Video, Music, FileText, Settings, ArrowRight, BookMarked } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -26,14 +26,14 @@ const features = [
     badge: 'Live Now'
   },
   {
-    title: 'Spiritual Music',
-    description: 'Listen to sacred chants, bhajans, and guided meditation music.',
-    icon: Music,
-    href: '/mp3-player',
+    title: 'Hindu Puja & Rituals',
+    description: 'Explore comprehensive guides for traditional Hindu rituals, ceremonies and pujas.',
+    icon: BookMarked,
+    href: '/puja-rituals',
     color: 'from-hindu-orange/30 to-hindu-orange/5',
     iconColor: 'text-hindu-orange',
     textColor: 'text-hindu-orange',
-    badge: 'New Content'
+    badge: 'New'
   },
   {
     title: 'Sacred Texts',
