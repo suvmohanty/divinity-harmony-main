@@ -1249,43 +1249,32 @@ const PujaRituals = () => {
   
   // Get user location and search for priests on Google
   const getUserLocation = () => {
-    // First show notification dialog to enable alerts
-    setShowCategoryDialog(true);
-  };
-  
-  // Function to handle searching after notification preferences are saved
-  const handleSearchAfterNotification = () => {
-    setShowCategoryDialog(false);
-    setIsLoadingPriests(true);
-    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const userLoc = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
-          setUserLocation(userLoc);
-          
-          // Set search query and open map dialog
-          setMapSearchQuery(`hindu priest near me`);
-          setIsMapDialogOpen(true);
-          setIsLoadingPriests(false);
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ latitude, longitude });
+          handleSearchAfterNotification();
         },
         (error) => {
-          console.error("Error getting location:", error);
-          // If location access is denied, still search but without precise location
-          setMapSearchQuery('hindu priest near me');
-          setIsMapDialogOpen(true);
-          setIsLoadingPriests(false);
+          console.error('Error getting location:', error);
+          // If location access is denied, use a default location or show error
+          setUserLocation({ latitude: 28.6139, longitude: 77.2090 }); // Default to Delhi
+          handleSearchAfterNotification();
         }
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
-      // Fallback to a general search
-      setMapSearchQuery('hindu priest near me');
+      console.error('Geolocation is not supported by this browser');
+      // Use default location if geolocation is not supported
+      setUserLocation({ latitude: 28.6139, longitude: 77.2090 }); // Default to Delhi
+      handleSearchAfterNotification();
+    }
+  };
+
+  const handleSearchAfterNotification = () => {
+    if (userLocation) {
       setIsMapDialogOpen(true);
-      setIsLoadingPriests(false);
+      setMapSearchQuery(`Hindu Priests near ${userLocation.latitude},${userLocation.longitude}`);
     }
   };
   
@@ -1932,72 +1921,29 @@ const PujaRituals = () => {
             open={isMapDialogOpen} 
             onOpenChange={setIsMapDialogOpen}
           >
-            <DialogContent className="max-w-7xl w-[95vw] max-h-[90vh] p-0 overflow-hidden">
-              <div className="flex justify-between items-center p-4 border-b">
+            <DialogContent className="max-w-5xl h-[80vh] p-0 gap-0">
+              <DialogHeader className="p-4 pb-2">
                 <DialogTitle>Hindu Priests Near You</DialogTitle>
-                <DialogClose className="h-6 w-6 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100">
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Close</span>
-                </DialogClose>
-              </div>
-              <div className="relative h-[80vh]">
-                {/* 
-                  Google Maps API Key Instructions:
-                  1. Go to https://developers.google.com/maps/documentation/embed/get-api-key
-                  2. Create a project in Google Cloud Console
-                  3. Enable "Maps Embed API" and "Places API"
-                  4. Create credentials to get your API key
-                  5. Replace the key below with your API key
-                  6. Add restrictions to your API key for security (HTTP referrers)
-                */}
-                <iframe 
-                  src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyBiCn7CgggLgUBvZ51C_ZW3BdwRQ-EnfKw&q=${encodeURIComponent(mapSearchQuery)}&zoom=12`} 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  loading="lazy"
-                  className="absolute inset-0"
-                  referrerPolicy="no-referrer-when-downgrade"
+                <DialogDescription>
+                  Showing results for priests in your area
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex-1 h-full">
+                <iframe
+                  src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyCz9ipWeMCe9vjtJA3k1BxaWrezuR_bWAs&q=${encodeURIComponent(mapSearchQuery)}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
                   allowFullScreen
-                ></iframe>
-                
-                {/* Alternative method using Google Maps JavaScript API would be better for production */}
-                {/* The iframe method is used here for simplicity but has limitations */}
-                
-                {/* Fake side list for visual purposes */}
-                <div className="absolute top-0 left-0 w-[350px] h-full bg-background/95 overflow-y-auto shadow-lg border-r">
-                  <div className="p-3 border-b">
-                    <p className="text-sm font-medium">Search Results</p>
-                  </div>
-                  
-                  {/* Sample priest listings - in production, these would be fetched from the Google Places API */}
-                  {[1, 2, 3, 4, 5].map((index) => (
-                    <div key={index} className="p-4 border-b hover:bg-muted/50 cursor-pointer">
-                      <div className="flex justify-between">
-                        <div>
-                          <h3 className="font-medium">Hindu Priest {index}</h3>
-                          <p className="text-sm text-muted-foreground">4.{index} ★ ({Math.floor(Math.random() * 50) + 10})</p>
-                        </div>
-                        <Badge variant="outline" className="h-fit">Open</Badge>
-                      </div>
-                      <p className="text-sm mt-1">Location {index}, Near Temple</p>
-                      <div className="flex mt-2 gap-2">
-                        <Button size="sm" variant="outline" className="text-xs">
-                          <Phone className="h-3 w-3 mr-1" />
-                          Call
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-xs">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          Directions
-                        </Button>
-                        <Button size="sm" className="text-xs ml-auto bg-hindu-orange hover:bg-hindu-orange/90 text-white">
-                          Book
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
               </div>
+              <DialogFooter className="p-4 pt-2">
+                <DialogClose asChild>
+                  <Button variant="secondary">Close</Button>
+                </DialogClose>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
