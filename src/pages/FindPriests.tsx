@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Star, MapPin, Clock, Phone } from 'lucide-react';
+import Layout from '@/components/layout/Layout';
 
 declare global {
   interface Window {
@@ -186,77 +187,79 @@ const FindPriests = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Left Panel - List of Priests */}
-      <div className="w-[400px] h-full overflow-y-auto border-r">
-        <div className="p-4">
-          <h1 className="text-2xl font-semibold mb-2">Hindu Priests Near You</h1>
-          <p className="text-sm text-gray-600 mb-4">Results for priests in your area</p>
-          
-          <div className="space-y-6">
-            {priests.map((priest) => (
-              <div 
-                key={priest.id} 
-                className={`cursor-pointer hover:bg-gray-50 -mx-4 px-4 py-3 ${selectedPriest === priest.id ? 'bg-blue-50' : ''}`}
-                onClick={() => handlePriestClick(priest)}
-              >
-                <h3 className="text-lg font-medium text-blue-800 hover:underline mb-1">
-                  {priest.name}
-                </h3>
-                
-                <div className="flex items-center gap-1 mb-2">
-                  <div className="flex items-center text-[#fbbc04]">
-                    <Star className="h-4 w-4 fill-current" />
-                    <span className="ml-1 text-black">{priest.rating}</span>
-                  </div>
-                  <span className="text-gray-600">({priest.reviews})</span>
-                  <span className="text-gray-600">· {priest.type}</span>
-                </div>
-
-                <div className="space-y-1 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    {priest.address}
-                  </div>
+    <Layout>
+      <div className="flex h-[calc(100vh-64px)] mt-16">
+        {/* Left Panel - List of Priests */}
+        <div className="w-[400px] h-full overflow-y-auto border-r bg-white">
+          <div className="p-4">
+            <h1 className="text-2xl font-semibold mb-2">Hindu Priests Near You</h1>
+            <p className="text-sm text-gray-600 mb-4">Results for priests in your area</p>
+            
+            <div className="space-y-6">
+              {priests.map((priest) => (
+                <div 
+                  key={priest.id} 
+                  className={`cursor-pointer hover:bg-gray-50 -mx-4 px-4 py-3 ${selectedPriest === priest.id ? 'bg-blue-50' : ''}`}
+                  onClick={() => handlePriestClick(priest)}
+                >
+                  <h3 className="text-lg font-medium text-blue-800 hover:underline mb-1">
+                    {priest.name}
+                  </h3>
                   
-                  {priest.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      {priest.phone}
+                  <div className="flex items-center gap-1 mb-2">
+                    <div className="flex items-center text-[#fbbc04]">
+                      <Star className="h-4 w-4 fill-current" />
+                      <span className="ml-1 text-black">{priest.rating}</span>
                     </div>
+                    <span className="text-gray-600">({priest.reviews})</span>
+                    <span className="text-gray-600">· {priest.type}</span>
+                  </div>
+
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      {priest.address}
+                    </div>
+                    
+                    {priest.phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4" />
+                        {priest.phone}
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span className={priest.isOpen ? 'text-green-700' : 'text-red-700'}>
+                        {priest.hours}
+                      </span>
+                    </div>
+                  </div>
+
+                  {priest.description && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      {priest.description}
+                    </p>
                   )}
-                  
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span className={priest.isOpen ? 'text-green-700' : 'text-red-700'}>
-                      {priest.hours}
-                    </span>
+
+                  <div className="mt-3">
+                    <button 
+                      className="text-blue-800 hover:text-blue-900 text-sm font-medium"
+                      onClick={(e) => handleGetDirections(priest, e)}
+                    >
+                      Directions
+                    </button>
                   </div>
                 </div>
-
-                {priest.description && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    {priest.description}
-                  </p>
-                )}
-
-                <div className="mt-3">
-                  <button 
-                    className="text-blue-800 hover:text-blue-900 text-sm font-medium"
-                    onClick={(e) => handleGetDirections(priest, e)}
-                  >
-                    Directions
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Right Panel - Map */}
-      <div className="flex-1" ref={mapRef} />
-    </div>
+        {/* Right Panel - Map */}
+        <div className="flex-1" ref={mapRef} />
+      </div>
+    </Layout>
   );
 };
 
