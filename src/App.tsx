@@ -12,6 +12,7 @@ import SacredTexts from "./pages/SacredTexts";
 import UserSettings from "./pages/UserSettings";
 import PujaRituals from "./pages/PujaRituals";
 import SplashScreen from "./components/auth/SplashScreen";
+import FindPriests from "./pages/FindPriests";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => {
                 <Route path="/mantras" element={<MantrasPage />} />
                 <Route path="/darshan" element={<LiveDarshan />} />
                 <Route path="/puja-rituals" element={<PujaRituals />} />
+                <Route path="/find-priests" element={<FindPriests />} />
                 <Route path="/pdf-reader" element={<SacredTexts />} />
                 <Route path="/settings" element={<UserSettings />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -39,6 +39,7 @@ import {
   signOut
 } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { useNavigate } from 'react-router-dom';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -90,6 +91,7 @@ interface UserLocation {
 }
 
 const PujaRituals = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('daily-pujas');
   const [selectedRitual, setSelectedRitual] = useState<RitualItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -1428,6 +1430,10 @@ const PujaRituals = () => {
     );
   };
 
+  const handleBookSession = () => {
+    navigate('/find-priests');  // Updated to match the route path
+  };
+
   return (
     <ThemeProvider>
       <Layout>
@@ -1553,7 +1559,7 @@ const PujaRituals = () => {
             </p>
             <Button 
               className="bg-gradient-to-r from-hindu-orange to-hindu-gold hover:from-hindu-orange/90 hover:to-hindu-gold/90"
-              onClick={getUserLocation}
+              onClick={handleBookSession}
             >
               Book a Session
             </Button>
